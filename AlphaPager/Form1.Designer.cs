@@ -31,11 +31,11 @@
             this.butLogin = new System.Windows.Forms.Button();
             this.butConfig = new System.Windows.Forms.Button();
             this.textCitnum = new System.Windows.Forms.TextBox();
-            this.textPrivvPass = new System.Windows.Forms.TextBox();
+            this.textPrivPass = new System.Windows.Forms.TextBox();
             this.textWorld = new System.Windows.Forms.TextBox();
             this.textCoords = new System.Windows.Forms.TextBox();
             this.textAvatar = new System.Windows.Forms.TextBox();
-            this.listView1 = new System.Windows.Forms.ListView();
+            this.lisStatus = new System.Windows.Forms.ListView();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -71,12 +71,12 @@
             this.textCitnum.Size = new System.Drawing.Size(100, 20);
             this.textCitnum.TabIndex = 2;
             // 
-            // textPrivvPass
+            // textPrivPass
             // 
-            this.textPrivvPass.Location = new System.Drawing.Point(64, 65);
-            this.textPrivvPass.Name = "textPrivvPass";
-            this.textPrivvPass.Size = new System.Drawing.Size(100, 20);
-            this.textPrivvPass.TabIndex = 3;
+            this.textPrivPass.Location = new System.Drawing.Point(64, 65);
+            this.textPrivPass.Name = "textPrivPass";
+            this.textPrivPass.Size = new System.Drawing.Size(100, 20);
+            this.textPrivPass.TabIndex = 3;
             // 
             // textWorld
             // 
@@ -99,13 +99,13 @@
             this.textAvatar.Size = new System.Drawing.Size(44, 20);
             this.textAvatar.TabIndex = 6;
             // 
-            // listView1
+            // lisStatus
             // 
-            this.listView1.Location = new System.Drawing.Point(6, 153);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(362, 180);
-            this.listView1.TabIndex = 7;
-            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.lisStatus.Location = new System.Drawing.Point(6, 153);
+            this.lisStatus.Name = "lisStatus";
+            this.lisStatus.Size = new System.Drawing.Size(362, 180);
+            this.lisStatus.TabIndex = 7;
+            this.lisStatus.UseCompatibleStateImageBehavior = false;
             // 
             // statusStrip1
             // 
@@ -189,11 +189,11 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.listView1);
+            this.Controls.Add(this.lisStatus);
             this.Controls.Add(this.textAvatar);
             this.Controls.Add(this.textCoords);
             this.Controls.Add(this.textWorld);
-            this.Controls.Add(this.textPrivvPass);
+            this.Controls.Add(this.textPrivPass);
             this.Controls.Add(this.textCitnum);
             this.Controls.Add(this.butConfig);
             this.Controls.Add(this.butLogin);
@@ -209,11 +209,11 @@
         private System.Windows.Forms.Button butLogin;
         private System.Windows.Forms.Button butConfig;
         private System.Windows.Forms.TextBox textCitnum;
-        private System.Windows.Forms.TextBox textPrivvPass;
+        private System.Windows.Forms.TextBox textPrivPass;
         private System.Windows.Forms.TextBox textWorld;
         private System.Windows.Forms.TextBox textCoords;
         private System.Windows.Forms.TextBox textAvatar;
-        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ListView lisStatus;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
