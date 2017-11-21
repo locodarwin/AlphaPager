@@ -35,7 +35,6 @@
             this.textWorld = new System.Windows.Forms.TextBox();
             this.textCoords = new System.Windows.Forms.TextBox();
             this.textAvatar = new System.Windows.Forms.TextBox();
-            this.lisStatus = new System.Windows.Forms.ListView();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -44,6 +43,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.textBotname = new System.Windows.Forms.TextBox();
+            this.lisStatus = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
             // 
             // butLogin
@@ -54,6 +54,7 @@
             this.butLogin.TabIndex = 0;
             this.butLogin.Text = "Login";
             this.butLogin.UseVisualStyleBackColor = true;
+            this.butLogin.Click += new System.EventHandler(this.butLogin_Click);
             // 
             // butConfig
             // 
@@ -98,14 +99,6 @@
             this.textAvatar.Name = "textAvatar";
             this.textAvatar.Size = new System.Drawing.Size(44, 20);
             this.textAvatar.TabIndex = 6;
-            // 
-            // lisStatus
-            // 
-            this.lisStatus.Location = new System.Drawing.Point(6, 153);
-            this.lisStatus.Name = "lisStatus";
-            this.lisStatus.Size = new System.Drawing.Size(362, 180);
-            this.lisStatus.TabIndex = 7;
-            this.lisStatus.UseCompatibleStateImageBehavior = false;
             // 
             // statusStrip1
             // 
@@ -176,11 +169,20 @@
             this.textBotname.Size = new System.Drawing.Size(100, 20);
             this.textBotname.TabIndex = 14;
             // 
+            // lisStatus
+            // 
+            this.lisStatus.FormattingEnabled = true;
+            this.lisStatus.Location = new System.Drawing.Point(5, 159);
+            this.lisStatus.Name = "lisStatus";
+            this.lisStatus.Size = new System.Drawing.Size(365, 173);
+            this.lisStatus.TabIndex = 16;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(374, 360);
+            this.Controls.Add(this.lisStatus);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.textBotname);
             this.Controls.Add(this.label5);
@@ -189,7 +191,6 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.lisStatus);
             this.Controls.Add(this.textAvatar);
             this.Controls.Add(this.textCoords);
             this.Controls.Add(this.textWorld);
@@ -213,7 +214,6 @@
         private System.Windows.Forms.TextBox textWorld;
         private System.Windows.Forms.TextBox textCoords;
         private System.Windows.Forms.TextBox textAvatar;
-        private System.Windows.Forms.ListView lisStatus;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
@@ -222,6 +222,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox textBotname;
+        private System.Windows.Forms.ListBox lisStatus;
     }
 }
 

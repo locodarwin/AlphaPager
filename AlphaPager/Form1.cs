@@ -16,6 +16,25 @@ namespace AlphaPager
         public Form1()
         {
             InitializeComponent();
+
+            //lisStatus.View = View.Details;
+            //lisStatus.Columns.Add("Status", 180, HorizontalAlignment.Left);
+
+            Status("Ready to log into universe.");
+            textBotname.Text = Globals.sBotName;
+            textCitnum.Text = Convert.ToString(Globals.iCitNum);
+            textPrivPass.Text = Globals.sPassword;
+            textWorld.Text = Globals.sWorld;
+            //textXPos.Text = Convert.ToString(Globals.iXPos);
+            //txtYPos.Text = Convert.ToString(Globals.iYPos);
+            //txtZPos.Text = Convert.ToString(Globals.iZPos);
+            //txtYaw.Text = Convert.ToString(Globals.iYaw);
+            textAvatar.Text = Convert.ToString(Globals.iAV);
+
+            aTimer = new Timer();
+            aTimer.Tick += new EventHandler(aTimer_Tick);
+            aTimer.Interval = 100;
+            aTimer.Start();
         }
 
 
@@ -40,6 +59,8 @@ namespace AlphaPager
             public static bool iInWorld = false;
         }
 
+        
+        /*
         // Form starting point
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -59,14 +80,83 @@ namespace AlphaPager
             aTimer.Interval = 100;
             aTimer.Start();
         }
+        */
+
+        private void butLogin_Click(object sender, EventArgs e)
+        {
+            UniverseLogin();
+        }
 
 
 
 
-        // Timer function for the AW Wait function
+        // The click event for Login to Universe
+        private void UniverseLogin()
+        {
+            // Grab the contents of the controls and put them into the globals
+            //Globals.sUnivLogin = txtHost.Text;
+            //Globals.iPort = Convert.ToInt32(txtPort.Text);
+            Globals.sBotName = textBotname.Text;
+            //Globals.sBotDesc = txtDesc.Text;
+            Globals.iCitNum = Convert.ToInt32(textCitnum.Text);
+            Globals.sPassword = textPrivPass.Text;
+
+
+            // Check universe login state and abort if we're already logged in
+            if (Globals.iInUniv == true)
+            {
+                Status("Already logged into universe!");
+                return;
+            }
+
+            // Initalize the AW API?
+            Status("Initializing the API instance.");
+            _instance = new Instance();
+
+            // Install events & callbacks
+            Status("Installing events and callbacks.");
+            //_instance.EventAvatarAdd += OnEventAvatarAdd;
+            //_instance.EventChat += OnEventChat;
+
+            // Set universe login parameters
+            _instance.Attributes.LoginName = Globals.sBotName;
+            _instance.Attributes.LoginOwner = Globals.iCitNum;
+            _instance.Attributes.LoginPrivilegePassword = Globals.sPassword;
+            //_instance.Attributes.LoginApplication = Globals.sBotDesc;
+
+            // Log into universe
+            Status("Entering universe.");
+            var rc = _instance.Login();
+            if (rc != Result.Success)
+            {
+                Status("Failed to log in to universe (reason:" + rc + ").");
+                return;
+            }
+            else
+            {
+                Status("Universe entry successful.");
+                Globals.iInUniv = true;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+        // Timer method for AW_WAIT()
         private void aTimer_Tick(object source, EventArgs e)
         {
-            Utility.Wait(0);
+            if(Globals.iInWorld)
+            {
+                Utility.Wait(0);
+            }
+            
         }
 
 
@@ -77,7 +167,6 @@ namespace AlphaPager
             lisStatus.Items.Add(sText);
         }
 
-
-
+        
     }
 }
