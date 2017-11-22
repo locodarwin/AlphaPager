@@ -58,6 +58,10 @@ namespace AlphaPager
 
         public static class Globals
         {
+            public static string sAppName = "AlphaPager";
+            public static string sVersion = "v1.0";
+            public static string sByline = "Copyright © 2017 by Locodarwin";
+
             public static string sUnivLogin = "auth.activeworlds.com";
             public static int iPort = 6670;
             public static string sBotName = "Sammy";
@@ -70,6 +74,14 @@ namespace AlphaPager
             public static int iYaw = 0;
             public static int iAV = 1;
 
+            // Status and logging
+            public static bool iChat2Stat = false;
+            public static bool iCmd2Stat = true;
+            public static bool iChat2Log = false;
+            public static bool iCmd2Log = false;
+            public static bool iStat2Log = false;
+
+            // Universe/world login states
             public static bool iInUniv = false;
             public static bool iInWorld = false;
         }
@@ -142,7 +154,7 @@ namespace AlphaPager
             // Install events & callbacks
             m_Login.ReportProgress(0, "Installing events and callbacks.");
             //_instance.EventAvatarAdd += OnEventAvatarAdd;
-            //_instance.EventChat += OnEventChat;
+            _instance.EventChat += OnEventChat;
 
             // Set universe login parameters
             _instance.Attributes.LoginName = Globals.sBotName;
@@ -151,7 +163,7 @@ namespace AlphaPager
             //_instance.Attributes.LoginApplication = Globals.sBotDesc;
 
             // Log into universe
-            m_Login.ReportProgress(0, "Entering universe.");
+            //m_Login.ReportProgress(0, "Entering universe.");
             var rc = _instance.Login();
             if (rc != Result.Success)
             {
@@ -165,7 +177,7 @@ namespace AlphaPager
             }
  
             // Enter world
-            m_Login.ReportProgress(0, "Logging into world " + Globals.sWorld + ".");
+            //m_Login.ReportProgress(0, "Logging into world " + Globals.sWorld + ".");
             rc = _instance.Enter(Globals.sWorld);
             if (rc != Result.Success)
             {
@@ -176,7 +188,7 @@ namespace AlphaPager
             }
             else
             {
-                m_Login.ReportProgress(0, "World entry successful.");
+                m_Login.ReportProgress(0, "Entered world " + Globals.sWorld + ".");
                 Globals.iInWorld = true;
             }
 
@@ -246,7 +258,7 @@ namespace AlphaPager
         }
 
 
-        // User exist the main application form
+        // Dispose of the bot instance when exits the main application form
         private void Form1_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             _instance.Dispose();
