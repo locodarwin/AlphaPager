@@ -13,12 +13,16 @@ namespace AlphaPager
 {
     public partial class Form1 : Form
     {
+
+        // Timer, BG worker, instance definitions
+        public IInstance _instance;
+        public Timer aTimer;
+        BackgroundWorker m_Login;
+
+
         public Form1()
         {
             InitializeComponent();
-
-            //lisStatus.View = View.Details;
-            //lisStatus.Columns.Add("Status", 180, HorizontalAlignment.Left);
 
             Status("Ready to log into universe.");
             textBotname.Text = Globals.sBotName;
@@ -31,15 +35,26 @@ namespace AlphaPager
             //txtYaw.Text = Convert.ToString(Globals.iYaw);
             textAvatar.Text = Convert.ToString(Globals.iAV);
 
+            // Button starting configurations
+            toolLoggedIn.BackColor = System.Drawing.Color.Green;
+            butLogout.Enabled = false;
+
+            // The AW message queue timer
             aTimer = new Timer();
             aTimer.Tick += new EventHandler(aTimer_Tick);
-            aTimer.Interval = 100;
+            aTimer.Interval = 50;
             aTimer.Start();
+
+            // Background tasking definitions for the universe & world login
+            m_Login = new BackgroundWorker();
+            m_Login.DoWork += new DoWorkEventHandler(m_LoginDoWork);
+            m_Login.ProgressChanged += new ProgressChangedEventHandler(m_LoginProgress);
+            m_Login.RunWorkerCompleted += new RunWorkerCompletedEventHandler(m_LoginCompleted);
+            m_Login.WorkerReportsProgress = true;
+
         }
 
-
-        public IInstance _instance;
-        public Timer aTimer;
+        
 
         public static class Globals
         {
@@ -48,7 +63,7 @@ namespace AlphaPager
             public static string sBotName = "Sammy";
             public static int iCitNum = 318855;
             public static string sPassword = "password";
-            public static string sWorld = "powergod";
+            public static string sWorld = "Simulator";
             public static int iXPos = 0;
             public static int iYPos = 690;
             public static int iZPos = 500;
@@ -59,40 +74,10 @@ namespace AlphaPager
             public static bool iInWorld = false;
         }
 
-        
-        /*
-        // Form starting point
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            Status("Ready to log into universe.");
-            textBotname.Text = Globals.sBotName;
-            textCitnum.Text = Convert.ToString(Globals.iCitNum);
-            textPrivPass.Text = Globals.sPassword;
-            textWorld.Text = Globals.sWorld;
-            //textXPos.Text = Convert.ToString(Globals.iXPos);
-            //txtYPos.Text = Convert.ToString(Globals.iYPos);
-            //txtZPos.Text = Convert.ToString(Globals.iZPos);
-            //txtYaw.Text = Convert.ToString(Globals.iYaw);
-            textAvatar.Text = Convert.ToString(Globals.iAV);
-
-            aTimer = new Timer();
-            aTimer.Tick += new EventHandler(aTimer_Tick);
-            aTimer.Interval = 100;
-            aTimer.Start();
-        }
-        */
 
         private void butLogin_Click(object sender, EventArgs e)
         {
-            UniverseLogin();
-        }
 
-
-
-
-        // The click event for Login to Universe
-        private void UniverseLogin()
-        {
             // Grab the contents of the controls and put them into the globals
             //Globals.sUnivLogin = txtHost.Text;
             //Globals.iPort = Convert.ToInt32(txtPort.Text);
@@ -100,21 +85,62 @@ namespace AlphaPager
             //Globals.sBotDesc = txtDesc.Text;
             Globals.iCitNum = Convert.ToInt32(textCitnum.Text);
             Globals.sPassword = textPrivPass.Text;
+            // Pull globals from controls for world entry and positioning
+            Globals.sWorld = textWorld.Text;
+            //Globals.iXPos = Convert.ToInt32(txtXPos.Text);
+            //Globals.iYPos = Convert.ToInt32(txtYPos.Text);
+            //Globals.iZPos = Convert.ToInt32(txtZPos.Text);
+            //Globals.iYaw = Convert.ToInt32(txtYaw.Text);
+            Globals.iXPos = 0;
+            Globals.iYPos = 200;
+            Globals.iZPos = 0;
+            Globals.iYaw = 0;
+            Globals.iAV = Convert.ToInt32(textAvatar.Text);
 
+            toolLoggedIn.BackColor = System.Drawing.Color.Yellow;
+            toolLoggedIn.Text = "Logging In";
+            butLogin.Enabled = false;
+            butConfig.Enabled = false;
+
+            m_Login.RunWorkerAsync();
+
+        }
+
+        private void butLogout_Click(object sender, EventArgs e)
+        {
+            if (Globals.iInUniv == false)
+            {
+                Status("Not in universe. Aborted.");
+                return;
+            }
+            _instance.Dispose();
+            Status("Logged out.");
+            toolLoggedIn.BackColor = System.Drawing.Color.Green;
+            toolLoggedIn.Text = "Logged Out";
+            butLogin.Enabled = true;
+            butConfig.Enabled = true;
+            Globals.iInUniv = false;
+            Globals.iInWorld = false;
+        }
+
+
+
+        void m_LoginDoWork(object sender, DoWorkEventArgs e)
+        {
 
             // Check universe login state and abort if we're already logged in
             if (Globals.iInUniv == true)
             {
-                Status("Already logged into universe!");
+                m_Login.ReportProgress(0, "Already logged into universe!");
                 return;
             }
 
             // Initalize the AW API?
-            Status("Initializing the API instance.");
+            m_Login.ReportProgress(0, "Initializing the API instance.");
             _instance = new Instance();
 
             // Install events & callbacks
-            Status("Installing events and callbacks.");
+            m_Login.ReportProgress(0, "Installing events and callbacks.");
             //_instance.EventAvatarAdd += OnEventAvatarAdd;
             //_instance.EventChat += OnEventChat;
 
@@ -125,31 +151,91 @@ namespace AlphaPager
             //_instance.Attributes.LoginApplication = Globals.sBotDesc;
 
             // Log into universe
-            Status("Entering universe.");
+            m_Login.ReportProgress(0, "Entering universe.");
             var rc = _instance.Login();
             if (rc != Result.Success)
             {
-                Status("Failed to log in to universe (reason:" + rc + ").");
+                m_Login.ReportProgress(0, "Unable to log in to universe (reason:" + rc + ").");
                 return;
             }
             else
             {
-                Status("Universe entry successful.");
+                m_Login.ReportProgress(0, "Universe entry successful.");
                 Globals.iInUniv = true;
             }
+ 
+            // Enter world
+            m_Login.ReportProgress(0, "Logging into world " + Globals.sWorld + ".");
+            rc = _instance.Enter(Globals.sWorld);
+            if (rc != Result.Success)
+            {
+                m_Login.ReportProgress(0, "Failed to log into world" + Globals.sWorld + " (reason:" + rc + ").");
+                _instance.Dispose();
+                Globals.iInUniv = false;
+                return;
+            }
+            else
+            {
+                m_Login.ReportProgress(0, "World entry successful.");
+                Globals.iInWorld = true;
+            }
+
+            // Commit the positioning and become visible
+            m_Login.ReportProgress(0, "Changing position in world.");
+            _instance.Attributes.MyX = Globals.iXPos;
+            _instance.Attributes.MyY = Globals.iYPos;
+            _instance.Attributes.MyZ = Globals.iZPos;
+            _instance.Attributes.MyYaw = Globals.iYaw;
+            _instance.Attributes.MyType = Globals.iAV;
+
+
+            rc = _instance.StateChange();
+            if (rc == Result.Success)
+            {
+                m_Login.ReportProgress(0, "Movement successful.");
+            }
+            else
+            {
+                m_Login.ReportProgress(0, "Movement aborted (reason: " + rc + ").");
+            }
+
+
+        }
+
+        void m_LoginProgress(object serder, ProgressChangedEventArgs e)
+        {
+            Status(e.UserState.ToString());
+        }
+
+
+        void m_LoginCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                Status("Error while performing background operation!");
+            }
+
+            if (Globals.iInWorld == true)
+            {
+                toolLoggedIn.BackColor = System.Drawing.Color.Red;
+                toolLoggedIn.Text = "Logged In";
+                butLogout.Enabled = true;
+                Status("Logged in");
+            }
+            else
+            {
+                toolLoggedIn.BackColor = System.Drawing.Color.Green;
+                toolLoggedIn.Text = "Logged Out";
+                butLogin.Enabled = true;
+                butConfig.Enabled = true;
+                Status("Failed to log in");
+            }
+
         }
 
 
 
-
-
-
-
-
-
-
-
-        // Timer method for AW_WAIT()
+        // Timer fires this method to perform AW_WAIT()
         private void aTimer_Tick(object source, EventArgs e)
         {
             if(Globals.iInWorld)
@@ -160,13 +246,26 @@ namespace AlphaPager
         }
 
 
+        // User exist the main application form
+        private void Form1_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            _instance.Dispose();
+        }
+
+
+
 
         // The status update member
         private void Status(string sText)
         {
+            if (lisStatus.Items.Count > 500)
+            {
+                lisStatus.Items.RemoveAt(0);
+            }
             lisStatus.Items.Add(sText);
+            lisStatus.TopIndex = lisStatus.Items.Count - 1;
         }
 
-        
+
     }
 }
