@@ -11,6 +11,11 @@ using AW;
 
 namespace AlphaPager
 {
+    
+    
+
+
+
     public partial class Form1 : Form
     {
 
@@ -18,6 +23,15 @@ namespace AlphaPager
         public IInstance _instance;
         public Timer aTimer;
         BackgroundWorker m_Login;
+
+
+        struct Coords 
+        {
+        public int x;
+        public int y;
+        public int z;
+        public int yaw;
+        };
 
 
         public Form1()
@@ -86,7 +100,6 @@ namespace AlphaPager
             public static bool iInWorld = false;
         }
 
-
         private void butLogin_Click(object sender, EventArgs e)
         {
 
@@ -137,7 +150,7 @@ namespace AlphaPager
 
 
 
-        void m_LoginDoWork(object sender, DoWorkEventArgs e)
+        private void m_LoginDoWork(object sender, DoWorkEventArgs e)
         {
 
             // Check universe login state and abort if we're already logged in
@@ -214,13 +227,13 @@ namespace AlphaPager
 
         }
 
-        void m_LoginProgress(object serder, ProgressChangedEventArgs e)
+        private void m_LoginProgress(object serder, ProgressChangedEventArgs e)
         {
             Status(e.UserState.ToString());
         }
 
 
-        void m_LoginCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void m_LoginCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Error != null)
             {
