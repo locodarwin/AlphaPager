@@ -43,6 +43,7 @@ namespace AlphaPager
             textCitnum.Text = Convert.ToString(Globals.iCitNum);
             textPrivPass.Text = Globals.sPassword;
             textWorld.Text = Globals.sWorld;
+            textCoords.Text = Globals.sCoords;
             //textXPos.Text = Convert.ToString(Globals.iXPos);
             //txtYPos.Text = Convert.ToString(Globals.iYPos);
             //txtZPos.Text = Convert.ToString(Globals.iZPos);
@@ -82,6 +83,7 @@ namespace AlphaPager
             public static int iCitNum = 318855;
             public static string sPassword = "password";
             public static string sWorld = "Simulator";
+            public static string sCoords = "1n 1w 2.5a 180";
             public static int iXPos = 0;
             public static int iYPos = 690;
             public static int iZPos = 500;
@@ -116,10 +118,12 @@ namespace AlphaPager
             //Globals.iYPos = Convert.ToInt32(txtYPos.Text);
             //Globals.iZPos = Convert.ToInt32(txtZPos.Text);
             //Globals.iYaw = Convert.ToInt32(txtYaw.Text);
-            Globals.iXPos = 0;
-            Globals.iYPos = 200;
-            Globals.iZPos = 0;
-            Globals.iYaw = 0;
+            Globals.sCoords = textCoords.Text;
+            Coords coords = ConvertCoords(Globals.sCoords);
+            Globals.iXPos = coords.x;
+            Globals.iYPos = coords.y;
+            Globals.iZPos = coords.z;
+            Globals.iYaw = coords.yaw;
             Globals.iAV = Convert.ToInt32(textAvatar.Text);
 
             toolLoggedIn.BackColor = System.Drawing.Color.Yellow;

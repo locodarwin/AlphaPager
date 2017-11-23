@@ -32,14 +32,15 @@ namespace AlphaPager
             if (sCoords.Contains("n") || sCoords.Contains("s"))
             {
                 q = sCoords.IndexOf("n");
-                if (q > 0)
+                if (q > -1)
                 {
-                    ns = sCoords.Substring(q);
+                    ns = sCoords.Substring(0, q);
                     z = ExtractSingleCoord(ns);
                 }
-                else
+                else 
                 {
-                    ns = sCoords.Substring(q);
+                    q = sCoords.IndexOf("s");
+                    ns = sCoords.Substring(0, q);
                     z = ExtractSingleCoord(ns);
                     z = z * -1;
                 }
@@ -54,14 +55,15 @@ namespace AlphaPager
             if (sCoords.Contains("e") || sCoords.Contains("w"))
             {
                 q = sCoords.IndexOf("w");
-                if (q > 0)
+                if (q > -1)
                 {
-                    ew = sCoords.Substring(q);
+                    ew = sCoords.Substring(0, q);
                     x = ExtractSingleCoord(ew);
                 }
                 else
                 {
-                    ew = sCoords.Substring(q);
+                    q = sCoords.IndexOf("e");
+                    ew = sCoords.Substring(0, q);
                     x = ExtractSingleCoord(ew);
                     x = x * -1;
                 }
@@ -76,9 +78,9 @@ namespace AlphaPager
             if (sCoords.Contains("a"))
             {
                 q = sCoords.IndexOf("a");
-                if (q > 0)
+                if (q > -1)
                 {
-                    alt = sCoords.Substring(q);
+                    alt = sCoords.Substring(0, q);
                     y = ExtractSingleCoord(alt);
                     y = y / 10;
                 }
@@ -95,7 +97,7 @@ namespace AlphaPager
             // Handle yaw
             q = sCoords.Length;
             yaw = "";
-            for (int j = q; j == 0; j--)
+            for (int j = q; j --> 0; )
             {
                 // string temp = s.Substring(a - 1, b); 
                 b = sCoords.Substring(j, 1);
@@ -139,11 +141,12 @@ namespace AlphaPager
             string cut = "";
             char g;
             int final;
-            for (int j = sIn.Length; j == 0; j--)
+            int bb = sIn.Length;
+            for (int j = bb; j --> 0; )
             {
                 b = sIn.Substring(j, 1);
                 g = Convert.ToChar(b);
-                if (Char.IsDigit(g) || b =="." || b == ",")
+                if (Char.IsDigit(g) || b =="." || b == "," || b == "-")
                 {
                     cut = cut + b;
                 }
