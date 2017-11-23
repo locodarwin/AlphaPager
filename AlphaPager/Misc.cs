@@ -21,8 +21,9 @@ namespace AlphaPager
         private Coords ConvertCoords(string sCoords)
         {
             Coords cTemp;
-            string ns, ew, alt, yaw, q, b;
-            int x, y, z, iyaw;
+            string ns, ew, alt, yaw, b;
+            int x, y, z, q, iyaw;
+            char g;
 
             // Lowercase the input string
             sCoords = sCoords.ToLower();
@@ -38,7 +39,7 @@ namespace AlphaPager
                 }
                 else
                 {
-                    ns = sCoords.Substring("s");
+                    ns = sCoords.Substring(q);
                     z = ExtractSingleCoord(ns);
                     z = z * -1;
                 }
@@ -60,7 +61,7 @@ namespace AlphaPager
                 }
                 else
                 {
-                    ew = sCoords.Substring("e");
+                    ew = sCoords.Substring(q);
                     x = ExtractSingleCoord(ew);
                     x = x * -1;
                 }
@@ -81,6 +82,10 @@ namespace AlphaPager
                     y = ExtractSingleCoord(alt);
                     y = y / 10;
                 }
+                else
+                {
+                    y = 0;
+                }
             }
             else
             {
@@ -88,12 +93,14 @@ namespace AlphaPager
             }
 
             // Handle yaw
-            q = sCoords.Length();
-            for (j = q; j = 0; j--)
+            q = sCoords.Length;
+            yaw = "";
+            for (int j = q; j == 0; j--)
             {
                 // string temp = s.Substring(a - 1, b); 
                 b = sCoords.Substring(j, 1);
-                if (Char.IsDigit(b))
+                g = Convert.ToChar(b);
+                if (Char.IsDigit(g))
                 {
                     yaw = yaw + b;
                 }
@@ -116,21 +123,44 @@ namespace AlphaPager
             {
                 iyaw = 0;
             }
+
+            // Prepare the output
             cTemp.x = x;
             cTemp.y = y;
             cTemp.z = z;
             cTemp.yaw = iyaw;
-
+            return cTemp;
         }
 
         private int ExtractSingleCoord(string sIn)
         {
-            int b;
-            for (j = sIn.Length(); j = 0; j--)
+            float value = 0;
+            string b;
+            string cut = "";
+            char g;
+            int final;
+            for (int j = sIn.Length; j == 0; j--)
             {
                 b = sIn.Substring(j, 1);
+                g = Convert.ToChar(b);
+                if (Char.IsDigit(g) || b =="." || b == ",")
+                {
+                    cut = cut + b;
+                }
+                else
+                {
+                    break;
+                }
 
             }
+            char[] input = cut.ToCharArray();
+            Array.Reverse(input);
+            cut = new string(input);
+            value = Convert.ToSingle(cut);
+            value = value * 1000;
+            final = Convert.ToInt32(value);
+
+            return final;
         }
 
 
