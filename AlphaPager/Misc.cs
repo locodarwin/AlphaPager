@@ -18,6 +18,55 @@ namespace AlphaPager
         }
 
 
+        private void LoadINI()
+        {
+            string sChat2Stat, sCmd2Stat, sChat2Log, sCmd2Log, sStat2Log;
+            string sOwners, sAdmins, sAdminCmds;
+            string sPort, sCitnum, sAV, sCaretaker;
+
+            var iniFile = new IniFile(Globals.sINI);
+            Globals.sUnivLogin = iniFile.GetValue("Login", "loginhost", "auth.activeworlds.com");
+            sPort = iniFile.GetValue("Login", "loginport", "6670");
+            Globals.sBotName = iniFile.GetValue("Login", "loginname", "Sammy");
+            sCitnum = iniFile.GetValue("Login", "logincitnum", "318855");
+            Globals.sPassword = iniFile.GetValue("Login", "loginpassword", "test");
+            Globals.sWorld = iniFile.GetValue("Login", "loginworld", "Simulator");
+            Globals.sCoords = iniFile.GetValue("Login", "logincoords", "0n 0w 0a 0");
+            sAV = iniFile.GetValue("Login", "loginav", "19");
+            sCaretaker = iniFile.GetValue("Login", "logincaretaker", "1");
+
+            sOwners = iniFile.GetValue("Permissions", "ownerlist", "318855");
+            sAdmins = iniFile.GetValue("Permissions", "adminlist", "318855");
+            sAdminCmds = iniFile.GetValue("Permissions", "admincmds", "stats");
+
+            sChat2Stat = iniFile.GetValue("Logging", "chat2stat", "no");
+            sChat2Log = iniFile.GetValue("Logging", "chat2log", "no");
+            sCmd2Stat = iniFile.GetValue("Logging", "cmd2stat", "no");
+            sCmd2Log = iniFile.GetValue("Logging", "cmd2log", "no");
+            sStat2Log = iniFile.GetValue("Logging", "stat2log", "no");
+
+            // Convert some of the values into their respective types
+            Globals.iPort = Convert.ToInt32(sPort);
+            Globals.iCitNum = Convert.ToInt32(sCitnum);
+            Globals.iAV = Convert.ToInt32(sAV);
+            if (sCaretaker == "yes") { Globals.iCaretaker = true; } else Globals.iCaretaker = false;
+            if (sChat2Stat == "yes") { Globals.iChat2Stat = true; } else Globals.iChat2Stat = false;
+            if (sChat2Log == "yes") { Globals.iChat2Log = true; } else Globals.iChat2Log = false;
+            if (sCmd2Stat == "yes") { Globals.iCmd2Stat = true; } else Globals.iCmd2Stat = false;
+            if (sStat2Log == "yes") { Globals.iStat2Log = true; } else Globals.iStat2Log = false;
+
+            // Create the Permissions lists
+            Globals.lOwners = sOwners.Split(',').ToList();
+            Globals.lAdmins = sAdmins.Split(',').ToList();
+            Globals.lAdminCmds = sAdminCmds.Split(',').ToList();
+
+
+
+
+        }
+
+
+
         private Coords ConvertCoords(string sCoords)
         {
             Coords cTemp;

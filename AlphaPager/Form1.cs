@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -38,16 +39,14 @@ namespace AlphaPager
         {
             InitializeComponent();
 
+            LoadINI();
+
             Status("Ready to log into universe.");
             textBotname.Text = Globals.sBotName;
             textCitnum.Text = Convert.ToString(Globals.iCitNum);
             textPrivPass.Text = Globals.sPassword;
             textWorld.Text = Globals.sWorld;
             textCoords.Text = Globals.sCoords;
-            //textXPos.Text = Convert.ToString(Globals.iXPos);
-            //txtYPos.Text = Convert.ToString(Globals.iYPos);
-            //txtZPos.Text = Convert.ToString(Globals.iZPos);
-            //txtYaw.Text = Convert.ToString(Globals.iYaw);
             textAvatar.Text = Convert.ToString(Globals.iAV);
 
             // Button starting configurations
@@ -73,29 +72,22 @@ namespace AlphaPager
 
         public static class Globals
         {
+            // Application parameters
             public static string sAppName = "AlphaPager";
             public static string sVersion = "v1.0";
             public static string sByline = "Copyright © 2017 by Locodarwin";
+            public static string sINI = "AlphaPager.ini";
 
-            public static string sUnivLogin = "auth.activeworlds.com";
-            public static int iPort = 6670;
-            public static string sBotName = "Sammy";
-            public static int iCitNum = 318855;
-            public static string sPassword = "password";
-            public static string sWorld = "Simulator";
-            public static string sCoords = "1n 1w 2.5a 180";
-            public static int iXPos = 0;
-            public static int iYPos = 690;
-            public static int iZPos = 500;
-            public static int iYaw = 0;
-            public static int iAV = 1;
+            // Login and positioning
+            public static string sUnivLogin, sBotName, sPassword, sWorld, sCoords;
+            public static int iPort, iCitNum, iXPos, iYPos, iZPos, iYaw, iAV;
+            public static bool iCaretaker;
+
+            // Permissions
+            public static List<string> lOwners, lAdmins, lAdminCmds;
 
             // Status and logging
-            public static bool iChat2Stat = false;
-            public static bool iCmd2Stat = true;
-            public static bool iChat2Log = false;
-            public static bool iCmd2Log = false;
-            public static bool iStat2Log = false;
+            public static bool iChat2Stat, iChat2Log, iCmd2Stat, iCmd2Log, iStat2Log;
 
             // Universe/world login states
             public static bool iInUniv = false;
@@ -106,18 +98,10 @@ namespace AlphaPager
         {
 
             // Grab the contents of the controls and put them into the globals
-            //Globals.sUnivLogin = txtHost.Text;
-            //Globals.iPort = Convert.ToInt32(txtPort.Text);
             Globals.sBotName = textBotname.Text;
-            //Globals.sBotDesc = txtDesc.Text;
             Globals.iCitNum = Convert.ToInt32(textCitnum.Text);
             Globals.sPassword = textPrivPass.Text;
-            // Pull globals from controls for world entry and positioning
             Globals.sWorld = textWorld.Text;
-            //Globals.iXPos = Convert.ToInt32(txtXPos.Text);
-            //Globals.iYPos = Convert.ToInt32(txtYPos.Text);
-            //Globals.iZPos = Convert.ToInt32(txtZPos.Text);
-            //Globals.iYaw = Convert.ToInt32(txtYaw.Text);
             Globals.sCoords = textCoords.Text;
             Coords coords = ConvertCoords(Globals.sCoords);
             Globals.iXPos = coords.x;
@@ -194,6 +178,14 @@ namespace AlphaPager
             }
  
             // Enter world
+
+            // Prepare for Caretaker mode if the option has been enabled
+            if (Globals.iCaretaker == true)
+            {
+                _instance.Attributes.EnterGlobal = true;
+                m_Login.ReportProgress(0, "Caretaker mode requested");
+            }
+
             //m_Login.ReportProgress(0, "Logging into world " + Globals.sWorld + ".");
             rc = _instance.Enter(Globals.sWorld);
             if (rc != Result.Success)
@@ -209,6 +201,19 @@ namespace AlphaPager
                 Globals.iInWorld = true;
             }
 
+            // Test caretaker mode (if requested)
+            if (Globals.iCaretaker == true)
+            {
+                if (_instance.Attributes.WorldCaretakerCapability == true)
+                {
+                    m_Login.ReportProgress(0, "Caretaker mode confirmed");
+                }
+                else
+                {
+                    m_Login.ReportProgress(0, "Caretaker mode denied");
+                }
+            }
+            
             // Commit the positioning and become visible
             m_Login.ReportProgress(0, "Changing position in world.");
             _instance.Attributes.MyX = Globals.iXPos;
@@ -216,7 +221,6 @@ namespace AlphaPager
             _instance.Attributes.MyZ = Globals.iZPos;
             _instance.Attributes.MyYaw = Globals.iYaw;
             _instance.Attributes.MyType = Globals.iAV;
-
 
             rc = _instance.StateChange();
             if (rc == Result.Success)
