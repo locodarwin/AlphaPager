@@ -2,21 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using AW;
 
 namespace AlphaPager
 {
     
-    
-
-
-
     public partial class Form1 : Form
     {
 
@@ -26,12 +17,19 @@ namespace AlphaPager
         BackgroundWorker m_Login;
 
 
-        struct Coords 
+        public struct Coords 
         {
         public int x;
         public int y;
         public int z;
         public int yaw;
+        };
+
+        public enum Logging
+        {
+            Chat,
+            Command,
+            Status,
         };
 
 
@@ -66,6 +64,8 @@ namespace AlphaPager
             m_Login.RunWorkerCompleted += new RunWorkerCompletedEventHandler(m_LoginCompleted);
             m_Login.WorkerReportsProgress = true;
 
+            // Make the enter key act as a click on the login button
+            this.AcceptButton = this.butLogin;
         }
 
         
@@ -84,14 +84,21 @@ namespace AlphaPager
             public static bool iCaretaker;
 
             // Permissions
-            public static List<string> lOwners, lAdmins, lAdminCmds;
+            public static List<string> lAdminCmds, lOwners, lAdmins;
 
             // Status and logging
             public static bool iChat2Stat, iChat2Log, iCmd2Stat, iCmd2Log, iStat2Log;
+            public static string sLogfile;
 
             // Universe/world login states
             public static bool iInUniv = false;
             public static bool iInWorld = false;
+
+            // Status markers
+            public static Logging LogStat = Logging.Status;
+
+            // Command prefix
+            public static string sComPrefix;
         }
 
         private void butLogin_Click(object sender, EventArgs e)
@@ -132,10 +139,20 @@ namespace AlphaPager
             toolLoggedIn.Text = "Logged Out";
             butLogin.Enabled = true;
             butConfig.Enabled = true;
+            butLogout.Enabled = false;
             Globals.iInUniv = false;
             Globals.iInWorld = false;
         }
 
+        private void butConfig_Click(object sender, EventArgs e)
+        {
+            //System.Diagnostics.Process.Start(@"notepad.exe " + Globals.sINI);
+            string appPath = Application.StartupPath;
+            var p = new System.Diagnostics.Process();
+            //p.StartInfo.FileName = "notepad.exe " + appPath + "\\" + Globals.sINI;
+            p.StartInfo.FileName = appPath + "\\" + Globals.sINI;
+            p.Start();
+        }
 
 
         private void m_LoginDoWork(object sender, DoWorkEventArgs e)
@@ -183,7 +200,7 @@ namespace AlphaPager
             if (Globals.iCaretaker == true)
             {
                 _instance.Attributes.EnterGlobal = true;
-                m_Login.ReportProgress(0, "Caretaker mode requested");
+                m_Login.ReportProgress(0, "Caretaker mode requested.");
             }
 
             //m_Login.ReportProgress(0, "Logging into world " + Globals.sWorld + ".");
@@ -206,11 +223,11 @@ namespace AlphaPager
             {
                 if (_instance.Attributes.WorldCaretakerCapability == true)
                 {
-                    m_Login.ReportProgress(0, "Caretaker mode confirmed");
+                    m_Login.ReportProgress(0, "Caretaker mode confirmed.");
                 }
                 else
                 {
-                    m_Login.ReportProgress(0, "Caretaker mode denied");
+                    m_Login.ReportProgress(0, "Caretaker mode denied.");
                 }
             }
             
@@ -253,7 +270,7 @@ namespace AlphaPager
                 toolLoggedIn.BackColor = System.Drawing.Color.Red;
                 toolLoggedIn.Text = "Logged In";
                 butLogout.Enabled = true;
-                Status("Logged in");
+                Status("Logged in.");
             }
             else
             {
@@ -261,7 +278,7 @@ namespace AlphaPager
                 toolLoggedIn.Text = "Logged Out";
                 butLogin.Enabled = true;
                 butConfig.Enabled = true;
-                Status("Failed to log in");
+                Status("Failed to log in.");
             }
 
         }
@@ -279,26 +296,58 @@ namespace AlphaPager
         }
 
 
-        // Dispose of the bot instance when exits the main application form
+        // Dispose of the bot instance before exiting the main application form
         private void Form1_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             _instance.Dispose();
+            Status("The bot application was closed.");
         }
 
 
 
 
         // The status update member
-        private void Status(string sText)
+        public void Status(string sText)
         {
-            if (lisStatus.Items.Count > 500)
+
+            bool iShouldStat = false;
+            bool iShouldLog = false;
+
+            // Decide if we should send the status to the status window, then do so as applicable
+            if (Globals.LogStat == Logging.Status) { iShouldStat = true; }
+            if (Globals.LogStat == Logging.Chat && Globals.iChat2Stat == true) { iShouldStat = true; }
+            if (Globals.LogStat == Logging.Command && Globals.iCmd2Stat == true) { iShouldStat = true; }
+
+            if (iShouldStat == true)
             {
-                lisStatus.Items.RemoveAt(0);
+                // Keep the status window contents trimmed as needed
+                if (lisStatus.Items.Count > 500)
+                {
+                    lisStatus.Items.RemoveAt(0);
+                }
+                // Update status listview & make sure the latest addition is visible
+                lisStatus.Items.Add(sText);
+                lisStatus.TopIndex = lisStatus.Items.Count - 1;
             }
-            lisStatus.Items.Add(sText);
-            lisStatus.TopIndex = lisStatus.Items.Count - 1;
+            
+
+            // Decide if we should send the status to the logfile, then do so as applicable
+            if (Globals.LogStat == Logging.Status && Globals.iStat2Log == true) { iShouldLog = true; }
+            if (Globals.LogStat == Logging.Chat && Globals.iChat2Log == true) { iShouldLog = true; }
+            if (Globals.LogStat == Logging.Command && Globals.iCmd2Log == true) { iShouldLog = true; }
+
+
+            if (iShouldLog == true)
+            {
+                string sDump = string.Format("{0:G} -- {1}\r\n", DateTime.Now, sText);
+                File.AppendAllText(Globals.sLogfile, sDump);
+
+            }
+
+            Globals.LogStat = Logging.Status;
+
         }
 
-
+        
     }
 }

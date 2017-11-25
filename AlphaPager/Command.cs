@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AW;
-
+﻿
 namespace AlphaPager
 {
     public partial class Form1
@@ -13,13 +7,14 @@ namespace AlphaPager
         private void Commands(string sName, int iType, int iSession, string sMsg)
         {
             // Get first letter of what was said command; if not a command, abort command mode
-            if (sMsg[0].ToString() != "/")
+            string sPrefix = sMsg.Substring(0, Globals.sComPrefix.Length);
+            if (sPrefix != Globals.sComPrefix)
             {
                 return;
             }
 
             // Strip all unneeded parts off the command and split into parameters
-            string strip = sMsg.Substring(1);
+            string strip = sMsg.Substring(Globals.sComPrefix.Length);
             strip = strip.Trim();
             string[] cmd = strip.Split(' ');
 
@@ -34,7 +29,7 @@ namespace AlphaPager
 
 
             }
-            //Stat(1, "Test", cmd, "black");
+
         }
 
         // Method to respond back on the results of the command
@@ -43,11 +38,13 @@ namespace AlphaPager
             if (iType == 2)
             {
                 _instance.Whisper(iSess, sMsg);
+                Globals.LogStat = Logging.Chat;
                 Status("(whispered): " + sMsg);
             }
             else
             {
                 _instance.Say(sMsg);
+                Globals.LogStat = Logging.Chat;
                 Status(sMsg);
             }
 
@@ -58,14 +55,15 @@ namespace AlphaPager
         private void DoVersion(string sName, int iType, int iSess, string[] cmd)
         {
             int iCitnum = GetCitnum(sName);
-            Status("Command: version (requested by " + sName + " (" + iCitnum.ToString() + ")");
+            Globals.LogStat = Logging.Command;
+            Status("Command: version (requested by " + sName + " " + iCitnum.ToString() + ")");
 
             // Check permissions
-            //if (CheckPerms(iCitnum, cmd[0]) == false)
-            //{
-            //    Response(iSess, iType, "Sorry, " + sName + ", but you do not have permission to use the " + cmd[0] + " command.");
-            //    return;
-            //}
+            if (CheckPerms("version", iCitnum) == false)
+            {
+                Response(iSess, iType, "Sorry, " + sName + ", but you do not have permission to use the " + cmd[0] + " command.");
+                return;
+            }
             Response(iSess, iType, Globals.sAppName + " " + Globals.sVersion + " - " + Globals.sByline);
         }
 

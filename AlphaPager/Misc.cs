@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AW;
 
 namespace AlphaPager
@@ -18,6 +15,38 @@ namespace AlphaPager
         }
 
 
+        public bool CheckPerms(string sCommand, int iCit)
+        {
+
+            string sCit = iCit.ToString();
+
+
+            // Check to see if command is in the admin list - if so, futher test it
+            // If not, assume anyone can issue it
+            if (Globals.lAdminCmds.Contains(sCommand))
+            {
+                // If the cit is owner or admin, permission granted - otherwise, denied!
+                if (Globals.lOwners.Contains(sCit) || Globals.lAdmins.Contains(sCit))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
+
+        }
+
+        
+
+
+
+        // Load the INI file into the globals
         private void LoadINI()
         {
             string sChat2Stat, sCmd2Stat, sChat2Log, sCmd2Log, sStat2Log;
@@ -33,17 +62,20 @@ namespace AlphaPager
             Globals.sWorld = iniFile.GetValue("Login", "loginworld", "Simulator");
             Globals.sCoords = iniFile.GetValue("Login", "logincoords", "0n 0w 0a 0");
             sAV = iniFile.GetValue("Login", "loginav", "19");
-            sCaretaker = iniFile.GetValue("Login", "logincaretaker", "1");
+            sCaretaker = iniFile.GetValue("Login", "logincaretaker", "no");
 
             sOwners = iniFile.GetValue("Permissions", "ownerlist", "318855");
             sAdmins = iniFile.GetValue("Permissions", "adminlist", "318855");
             sAdminCmds = iniFile.GetValue("Permissions", "admincmds", "stats");
+
+            Globals.sComPrefix = iniFile.GetValue("Commands", "commandprefix", "/");
 
             sChat2Stat = iniFile.GetValue("Logging", "chat2stat", "no");
             sChat2Log = iniFile.GetValue("Logging", "chat2log", "no");
             sCmd2Stat = iniFile.GetValue("Logging", "cmd2stat", "no");
             sCmd2Log = iniFile.GetValue("Logging", "cmd2log", "no");
             sStat2Log = iniFile.GetValue("Logging", "stat2log", "no");
+            Globals.sLogfile = iniFile.GetValue("Logging", "logfile", "botlog.txt");
 
             // Convert some of the values into their respective types
             Globals.iPort = Convert.ToInt32(sPort);
@@ -53,14 +85,13 @@ namespace AlphaPager
             if (sChat2Stat == "yes") { Globals.iChat2Stat = true; } else Globals.iChat2Stat = false;
             if (sChat2Log == "yes") { Globals.iChat2Log = true; } else Globals.iChat2Log = false;
             if (sCmd2Stat == "yes") { Globals.iCmd2Stat = true; } else Globals.iCmd2Stat = false;
+            if (sCmd2Log == "yes") { Globals.iCmd2Log = true; } else Globals.iCmd2Log = false;
             if (sStat2Log == "yes") { Globals.iStat2Log = true; } else Globals.iStat2Log = false;
 
             // Create the Permissions lists
             Globals.lOwners = sOwners.Split(',').ToList();
             Globals.lAdmins = sAdmins.Split(',').ToList();
             Globals.lAdminCmds = sAdminCmds.Split(',').ToList();
-
-
 
 
         }

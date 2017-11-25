@@ -16,10 +16,12 @@ namespace AlphaPager
             // Echo the chat (or whisper) to the chat window
             if (sender.Attributes.ChatType == ChatTypes.Whisper)
             {
+                Globals.LogStat = Logging.Chat;
                 Status(sender.Attributes.AvatarName + " (whispered): " + sender.Attributes.ChatMessage);
             }
             else
             {
+                Globals.LogStat = Logging.Chat;
                 Status(sender.Attributes.AvatarName + ": " + sender.Attributes.ChatMessage);
             }
 

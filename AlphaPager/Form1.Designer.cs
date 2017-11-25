@@ -37,6 +37,7 @@
             this.textAvatar = new System.Windows.Forms.TextBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolLoggedIn = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -46,7 +47,6 @@
             this.textBotname = new System.Windows.Forms.TextBox();
             this.lisStatus = new System.Windows.Forms.ListBox();
             this.butLogout = new System.Windows.Forms.Button();
-            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -69,6 +69,7 @@
             this.butConfig.TabIndex = 1;
             this.butConfig.Text = "Configure";
             this.butConfig.UseVisualStyleBackColor = true;
+            this.butConfig.Click += new System.EventHandler(this.butConfig_Click);
             // 
             // textCitnum
             // 
@@ -81,6 +82,7 @@
             // 
             this.textPrivPass.Location = new System.Drawing.Point(67, 65);
             this.textPrivPass.Name = "textPrivPass";
+            this.textPrivPass.PasswordChar = '*';
             this.textPrivPass.Size = new System.Drawing.Size(100, 20);
             this.textPrivPass.TabIndex = 3;
             // 
@@ -122,6 +124,11 @@
             this.toolLoggedIn.Name = "toolLoggedIn";
             this.toolLoggedIn.Size = new System.Drawing.Size(70, 17);
             this.toolLoggedIn.Text = "Logged Out";
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
             // 
             // label1
             // 
@@ -201,11 +208,6 @@
             this.butLogout.Text = "Log Out";
             this.butLogout.UseVisualStyleBackColor = true;
             this.butLogout.Click += new System.EventHandler(this.butLogout_Click);
-            // 
-            // toolStripStatusLabel2
-            // 
-            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 17);
             // 
             // Form1
             // 
