@@ -36,6 +36,7 @@ namespace AlphaPager
         public Form1()
         {
             InitializeComponent();
+            this.Text = Globals.sAppName + " " + Globals.sVersion;
 
             LoadINI();
 
